@@ -4,8 +4,8 @@
             <div class="flex items-center justify-between">
                 <div class="flex items-center justify-start rtl:justify-end">
                     <!-- Hamburger Button -->
-                    <button data-drawer-target="logo-sidebar" data-drawer-toggle="logo-sidebar" data-drawer-show="logo-sidebar" aria-controls="logo-sidebar"
-                        type="button"
+                    <button data-drawer-target="logo-sidebar" data-drawer-toggle="logo-sidebar"
+                        data-drawer-show="logo-sidebar" aria-controls="logo-sidebar" type="button"
                         class="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200">
                         <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
                             xmlns="http://www.w3.org/2000/svg">
@@ -63,7 +63,7 @@
         <div class="h-full px-3 py-5 overflow-y-auto bg-white">
             <ul class="space-y-2 font-medium">
                 <li>
-                    <RouterLink :to="{ name: 'user-dashboard' }"
+                    <RouterLink :to="{ name: 'user-dashboard' }" v-ripple
                         class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group">
                         <i class="fa-solid fa-gauge text-2xl w-8"></i>
                         <span class="ms-3">Dashboard</span>
@@ -71,7 +71,7 @@
                 </li>
 
                 <li>
-                    <RouterLink :to="{ name: 'user-profile' }"
+                    <RouterLink :to="{ name: 'user-profile' }" v-ripple
                         class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group">
                         <i class="fa-solid fa-user text-2xl w-8"></i>
                         <span class="ms-3">Profile</span>
@@ -79,28 +79,32 @@
                 </li>
 
                 <li>
-                    <RouterLink :to="{ name: 'user-educational-background' }" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group">
+                    <RouterLink :to="{ name: 'user-educational-background' }" v-ripple
+                        class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group">
                         <i class="fa-solid fa-user-graduate text-2xl w-8"></i>
                         <span class="ms-3">Educational Background</span>
                     </RouterLink>
                 </li>
 
                 <li>
-                    <RouterLink :to="{ name: 'user-board-exam' }" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group">
+                    <RouterLink :to="{ name: 'user-board-exam' }" v-ripple
+                        class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group">
                         <i class="fa-solid fa-file-lines text-2xl w-8"></i>
                         <span class="ms-3">Board Exams/Certifications</span>
                     </RouterLink>
                 </li>
 
                 <li>
-                    <RouterLink :to="{ name: 'user-work-experience' }" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group">
+                    <RouterLink :to="{ name: 'user-work-experience' }" v-ripple
+                        class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group">
                         <i class="fa-solid fa-briefcase text-2xl w-8"></i>
                         <span class="ms-3">Work Experiences</span>
                     </RouterLink>
                 </li>
 
                 <li>
-                    <RouterLink :to="{ name: 'user-training' }" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group">
+                    <RouterLink :to="{ name: 'user-training' }" v-ripple
+                        class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group">
                         <i class="fa-solid fa-person-digging text-2xl w-8"></i>
                         <span class="ms-3">Trainings</span>
                     </RouterLink>
@@ -121,7 +125,7 @@ import { initDrawers, initDropdowns } from 'flowbite';
 import { onMounted } from 'vue';
 
 onMounted(() => {
-  initDrawers();
-  initDropdowns();
+    initDrawers();
+    initDropdowns();
 })
 </script>
