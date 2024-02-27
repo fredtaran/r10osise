@@ -1,7 +1,7 @@
 <template>
     <div class="flex items-center justify-center h-screen">
         <div
-            class="flex flex-col items-center border-2 border-gray-500 px-3 py-5 w-[500px] justify-center rounded-lg divide-y-2 divide-gray-500">
+            class="flex flex-col items-center border-2 border-gray-500 px-3 py-5 w-[500px] justify-center rounded-lg divide-y-2 divide-gray-500 bg-slate-300">
             <div class="flex flex-col items-center">
                 <img src="/mgb-logo.png" alt="MGB Logo" class="h-[150px] w-[150px] mb-3 sm:mb-0">
                 <h1 class="text-xl font-bold hidden sm:block">Mines and Geosciences Bureau - X</h1>
