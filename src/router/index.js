@@ -14,19 +14,22 @@ const router = createRouter({
     {
       path: '/',
       name: 'login',
-      component: LoginView
+      component: LoginView,
+      meta: { requiresAuth: false }
     },
     // User Dashboard
     {
       path: '/user_dashboard',
       name: 'user-dashboard',
-      component: UserDashboardView
+      component: UserDashboardView,
+      meta: { requiresAuth: true, roles: ['user'] }
     },
     // User Profile
     {
       path: '/user_profile',
       name: 'user-profile',
-      component: UserProfileView
+      component: UserProfileView,
+      meta: { requiresAuth: true, roles: ['user'] }
     },
     // User Educational Background
     {
@@ -53,6 +56,26 @@ const router = createRouter({
       component: UserTrainingView
     },
   ]
+})
+
+router.beforeEach((to, from, next) => {
+  const isAuthenticated = ""
+  const userRole = ""
+
+  if(to.meta.requiresAuth && !isAuthenticated) {
+    next('/')
+  } else if(to.meta.requiresAuth && to.meta.roles && !to.meta.roles.includes(userRole)) {
+    if(userRole === "user") {
+      next('/user_dashboard')
+    }
+  } else if (to.path === '/' && isAuthenticated) {
+    // If the user is already authenticated, redirect them to the appropriate dashboard or home page
+    if(userRole === "user") {
+      next('/user_dashboard')
+    }
+  } else {
+    next()
+  }
 })
 
 export default router
