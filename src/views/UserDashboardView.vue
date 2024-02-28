@@ -2,6 +2,11 @@
 import { ref } from 'vue';
 import NavAndSidebarBase from './NavAndSidebarBase.vue';
 
+const search = ref("")
+
+const headers = []
+const applications = []
+
 </script>
 
 <template>
@@ -18,7 +23,13 @@ import NavAndSidebarBase from './NavAndSidebarBase.vue';
       </div>
 
       <div class="w-full mt-5 overflow-x-scroll">
-        
+        <v-card flat>
+          <template v-slot:text>
+            <v-text-field v-model="search" label="Search" single-line variant="outlined" hide-details></v-text-field>
+          </template>
+
+          <v-data-table :headers="headers" :items="applications" :search="search" :items-per-page="5" class="elevation-1"></v-data-table>
+        </v-card>
       </div>
     </div>
   </NavAndSidebarBase>
