@@ -1,11 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import LoginView from '../views/LoginView.vue'
-import UserDashboardView from '../views/UserDashboardView.vue'
-import UserProfileView from '../views/UserProfileView.vue'
-import UserBoardExamAndCertification from '../views/UserBoardExamAndCertificationView.vue'
-import UserEducationalBackground from '../views/UserEducationalBackgroundView.vue'
-import UserWorkExperienceView from '../views/UserWorkExperienceView.vue'
-import UserTrainingView from '../views/UserTrainingView.vue'
+import LoginView from '@/views/LoginView.vue'
+import RegisterView from '@/views/RegisterView.vue'
+import UserDashboardView from '@/views/UserDashboardView.vue'
+import UserProfileView from '@/views/UserProfileView.vue'
+import UserBoardExamAndCertification from '@/views/UserBoardExamAndCertificationView.vue'
+import UserEducationalBackground from '@/views/UserEducationalBackgroundView.vue'
+import UserWorkExperienceView from '@/views/UserWorkExperienceView.vue'
+import UserTrainingView from '@/views/UserTrainingView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -15,6 +16,13 @@ const router = createRouter({
       path: '/',
       name: 'login',
       component: LoginView,
+      meta: { requiresAuth: false }
+    },
+    // Login
+    {
+      path: '/register',
+      name: 'register',
+      component: RegisterView,
       meta: { requiresAuth: false }
     },
     // User Dashboard
@@ -35,25 +43,29 @@ const router = createRouter({
     {
       path: '/user_educational_backgroud',
       name: 'user-educational-background',
-      component: UserEducationalBackground
+      component: UserEducationalBackground,
+      meta: { requiresAuth: true, roles: ['user'] }
     },
     // Board Exams/Certification
     {
       path: '/user_board-exam',
       name: 'user-board-exam',
-      component: UserBoardExamAndCertification
+      component: UserBoardExamAndCertification,
+      meta: { requiresAuth: true, roles: ['user'] }
     },
     // Work Experience
     {
       path: '/user_work_experience',
       name: 'user-work-experience',
-      component: UserWorkExperienceView
+      component: UserWorkExperienceView,
+      meta: { requiresAuth: true, roles: ['user'] }
     },
     // Trainings
     {
       path: '/user_training',
       name: 'user-training',
-      component: UserTrainingView
+      component: UserTrainingView,
+      meta: { requiresAuth: true, roles: ['user'] }
     },
   ]
 })

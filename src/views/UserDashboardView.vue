@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue';
-import NavAndSidebarBase from './NavAndSidebarBase.vue';
+import NavAndSidebarBase from '@/components/NavAndSidebarBase.vue';
 
 const search = ref("")
 

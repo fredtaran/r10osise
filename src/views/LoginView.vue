@@ -60,6 +60,10 @@
                         </button>
                     </div>
                 </form>
+
+                <div class="mt-5">
+                <p>No account yet? Register <RouterLink :to="{ 'name': 'register' }" class="underline text-blue-600 font-bold hover:text-red-600">here</RouterLink>.</p>
+                </div>
             </div>
         </div>
     </div>

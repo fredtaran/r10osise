@@ -5,5 +5,5 @@
 </template>
 
 <script setup>
-import NavAndSidebarBase from './NavAndSidebarBase.vue';
+import NavAndSidebarBase from '@/components/NavAndSidebarBase.vue';
 </script>

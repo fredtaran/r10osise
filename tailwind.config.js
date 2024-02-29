@@ -13,6 +13,9 @@ export default {
         'banner-bg': '#0C2D57',
         'button-border': '#FFB0B0',
       },
+      backgroundImage: {
+        'registration': "url('/mgb-logo.png')",
+      },
     },
     fontFamily: {
       'Roboto': ['Roboto, sans-serif'],
