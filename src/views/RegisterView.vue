@@ -2,7 +2,10 @@
 import { ref, reactive, computed } from 'vue'
 import useVuelidate from '@vuelidate/core'
 import { required, minLength, sameAs, helpers } from '@vuelidate/validators'
-import axios from 'axios'
+import apiClient from '../../services/apiClient'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const formData = reactive({
     username: "",
@@ -41,12 +44,21 @@ const v$ = useVuelidate(rules, formData)
 const submitForm = async () => {
     const validationResult = await v$.value.$validate()
     if (validationResult) {
+        try {
+            await apiClient.get('/sanctum/csrf-cookie')
+            await apiClient.post('/api/register', {
+                formData
+            })
 
+            router.push('/')
+        } catch(err) {
+            console.log("Error: " + err)
+        }
     }
 }
 
 const checkUsername = async () => {
-    const response = await axios.get(`check_username?username=${formData.username}`)
+    const response = await apiClient.get(`api/check_username?username=${formData.username}`)
     isUsernameUnique.value = response.data.exist // Update the reactive variable
 }
 
@@ -94,8 +106,8 @@ const checkUsername = async () => {
                                     v-for="error in v$.confirm_password.$errors" :key="error.uid">{{ error.$message }}</span>
                             </div>
 
-                            <button type="submit"
-                                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
+                            <button type="submit" :disabled="isUsernameUnique && usernameTouched"
+                                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 disabled:cursor-not-allowed disabled:hover:bg-blue-700 disabled:opacity-50">Submit</button>
 
                             <span>Already have an account? Login <RouterLink :to="{ 'name': 'login' }"
                                     class="underline text-blue-600 font-bold hover:text-red-600">here</RouterLink>.</span>
