@@ -2,11 +2,11 @@
 import { ref, reactive, computed } from 'vue';
 import useVuelidate from '@vuelidate/core'
 import { required, helpers } from '@vuelidate/validators'
+import { useStore } from 'vuex';
 import apiClient from '../../services/apiClient';
-import { load } from 'webfontloader';
 
+const store = useStore()
 const loading = ref(false)
-
 const errorMessage = ref('')
 
 const formData = reactive({
@@ -33,13 +33,15 @@ const login = async () => {
     if (validationResult) {
         try {
             await apiClient.get('/sanctum/csrf-cookie')
-            await apiClient.post('/api/login', { formData })
+            await store.dispatch('login', formData)
         } catch (err) {
             errorMessage.value = err.response.data.message
         } finally {
             formData.password = ''
             loading.value = false
         }
+    } else {
+        loading.value = false
     }
 }
 
@@ -107,7 +109,7 @@ const login = async () => {
 
                     <div class="mt-5">
                         <button type="submit"
-                            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-bold rounded-lg text-sm w-full px-5 py-2.5 text-center inline-flex items-center justify-center">
+                            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-bold rounded-lg text-sm w-full px-5 py-2.5 text-center inline-flex items-center justify-center disabled:cursor-not-allowed disabled:opacity-50" :disabled="loading">
                             <div role="status" v-if="loading">
                                 <svg aria-hidden="true"
                                     class="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
