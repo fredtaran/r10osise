@@ -46,7 +46,7 @@
                                 </li>
 
                                 <li>
-                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300"
+                                    <a @click="logout" href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300"
                                         role="menuItem">Signout</a>
                                 </li>
                             </ul>
@@ -123,9 +123,15 @@
 <script setup>
 import { initDrawers, initDropdowns } from 'flowbite';
 import { onMounted } from 'vue';
+import apiClient from '../../services/apiClient'
 
 onMounted(() => {
     initDrawers();
     initDropdowns();
 })
+
+const logout = async() => {
+    await apiClient.get('/sanctum/csrf-cookie')
+    await store.dispatch('logout')
+}
 </script>

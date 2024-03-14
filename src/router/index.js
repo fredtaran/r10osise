@@ -31,69 +31,83 @@ const router = createRouter({
       path: '/user_dashboard',
       name: 'user-dashboard',
       component: UserDashboardView,
-      meta: { requiresAuth: true, roles: ['3'] }
+      meta: { requiresAuth: true, roles: [3] }
     },
     // User Profile
     {
       path: '/user_profile',
       name: 'user-profile',
       component: UserProfileView,
-      meta: { requiresAuth: true, roles: ['3'] }
+      meta: { requiresAuth: true, roles: [3] }
     },
     // User Educational Background
     {
       path: '/user_educational_backgroud',
       name: 'user-educational-background',
       component: UserEducationalBackground,
-      meta: { requiresAuth: true, roles: ['2'] }
+      meta: { requiresAuth: true, roles: [3] }
     },
     // Board Exams/Certification
     {
       path: '/user_board-exam',
       name: 'user-board-exam',
       component: UserBoardExamAndCertification,
-      meta: { requiresAuth: true, roles: ['3'] }
+      meta: { requiresAuth: true, roles: [3] }
     },
     // Work Experience
     {
       path: '/user_work_experience',
       name: 'user-work-experience',
       component: UserWorkExperienceView,
-      meta: { requiresAuth: true, roles: ['3'] }
+      meta: { requiresAuth: true, roles: [3] }
     },
     // Trainings
     {
       path: '/user_training',
       name: 'user-training',
       component: UserTrainingView,
-      meta: { requiresAuth: true, roles: ['3'] }
+      meta: { requiresAuth: true, roles: [3] }
     },
   ]
 })
 
 router.beforeEach((to, from, next) => {
-  
-  // Check if the route requires authentication
   if (to.matched.some(record => record.meta.requiresAuth)) {
-    // This route requires authentication, check if the user is authenticated
     if (!store.state.user) {
-      // User is not authenticated, redirect to login
-      next({ name: 'Login' });
+      // Redirect to login if not authenticated
+      if (to.name !== 'login') {
+        next({ name: 'login' });
+      } else {
+        // If already on the login page, proceed without redirecting
+        next();
+      }
     } else {
-      // User is authenticated, proceed to the route
-      next();
+      const requiredRoles = to.meta.roles;
+      if (requiredRoles && !requiredRoles.includes(store.state.user.role)) {
+        // Redirect based on user role
+        if (store.state.user.role === 3) {
+          next({ name: 'user-dashboard' });
+        } else if (store.state.user.role === 2) {
+
+        }
+      } else {
+        next();
+      }
     }
   } else {
-    // Check if user is authenticated
-    if(!store.state.user) {
+    if (!store.state.user) {
       next();
     } else {
-      // Check user role and redirect
-      if(store.state.user.role == 3) {
-        next('/user_dashboard')
+      // Redirect authenticated users to their dashboard or another appropriate page
+      if (to.name !== 'user-dashboard') {
+        next('/user_dashboard');
+      } else {
+        next();
       }
     }
   }
 });
+
+
 
 export default router

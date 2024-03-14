@@ -1,11 +1,13 @@
 <script setup>
-import { ref, reactive, computed } from 'vue';
-import useVuelidate from '@vuelidate/core'
+import { ref, reactive, computed } from 'vue'
 import { required, helpers } from '@vuelidate/validators'
-import { useStore } from 'vuex';
-import apiClient from '../../services/apiClient';
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
+import useVuelidate from '@vuelidate/core'
+import apiClient from '../../services/apiClient'
 
 const store = useStore()
+const router = useRouter()
 const loading = ref(false)
 const errorMessage = ref('')
 
@@ -34,6 +36,10 @@ const login = async () => {
         try {
             await apiClient.get('/sanctum/csrf-cookie')
             await store.dispatch('login', formData)
+
+            if(store.state.user.role == 3) {
+                router.replace('/user_dashboard')
+            }
         } catch (err) {
             errorMessage.value = err.response.data.message
         } finally {
