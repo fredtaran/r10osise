@@ -1,3 +1,25 @@
+<script setup>
+import { initDrawers, initDropdowns } from 'flowbite';
+import { onMounted } from 'vue';
+import apiClient from '../../services/apiClient'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
+
+const store = useStore()
+const router = useRouter()
+
+onMounted(() => {
+    initDrawers();
+    initDropdowns();
+})
+
+const logout = async () => {
+    await apiClient.get('/sanctum/csrf-cookie')
+    await store.dispatch('logout')
+    router.replace('/')
+}
+</script>
+
 <template>
     <nav class="fixed top-0 z-50 w-full bg-banner-bg border-b border-gray-200">
         <div class="px-3 py-3 lg:px-5 lg:pl-3">
@@ -46,7 +68,8 @@
                                 </li>
 
                                 <li>
-                                    <a @click="logout" href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300"
+                                    <a @click="logout" href="#"
+                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300"
                                         role="menuItem">Signout</a>
                                 </li>
                             </ul>
@@ -62,14 +85,6 @@
         aria-label="Sidebar">
         <div class="h-full px-3 py-5 overflow-y-auto bg-white">
             <ul class="space-y-2 font-medium">
-                <li>
-                    <RouterLink :to="{ name: 'user-dashboard' }" v-ripple
-                        class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group">
-                        <i class="fa-solid fa-gauge text-2xl w-8"></i>
-                        <span class="ms-3">Dashboard</span>
-                    </RouterLink>
-                </li>
-
                 <li>
                     <RouterLink :to="{ name: 'user-profile' }" v-ripple
                         class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group">
@@ -119,19 +134,3 @@
         </div>
     </div>
 </template>
-
-<script setup>
-import { initDrawers, initDropdowns } from 'flowbite';
-import { onMounted } from 'vue';
-import apiClient from '../../services/apiClient'
-
-onMounted(() => {
-    initDrawers();
-    initDropdowns();
-})
-
-const logout = async() => {
-    await apiClient.get('/sanctum/csrf-cookie')
-    await store.dispatch('logout')
-}
-</script>

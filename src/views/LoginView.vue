@@ -38,7 +38,7 @@ const login = async () => {
             await store.dispatch('login', formData)
 
             if(store.state.user.role == 3) {
-                router.replace('/user_dashboard')
+                router.replace('/user_profile')
             }
         } catch (err) {
             errorMessage.value = err.response.data.message

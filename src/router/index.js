@@ -26,13 +26,6 @@ const router = createRouter({
       component: RegisterView,
       meta: { requiresAuth: false }
     },
-    // User Dashboard
-    {
-      path: '/user_dashboard',
-      name: 'user-dashboard',
-      component: UserDashboardView,
-      meta: { requiresAuth: true, roles: [3] }
-    },
     // User Profile
     {
       path: '/user_profile',
@@ -99,8 +92,8 @@ router.beforeEach((to, from, next) => {
       next();
     } else {
       // Redirect authenticated users to their dashboard or another appropriate page
-      if (to.name !== 'user-dashboard') {
-        next('/user_dashboard');
+      if (to.name !== 'user-profile') {
+        next('/user_profile');
       } else {
         next();
       }

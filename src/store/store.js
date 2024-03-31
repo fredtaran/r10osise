@@ -9,6 +9,10 @@ export default createStore({
     mutations: {
         setUser(state, user) {
             state.user = user
+        },
+        removeUser(state) {
+            state.user = null
+            localStorage.removeItem('vuex')
         }
     },
     getters: {
@@ -21,6 +25,14 @@ export default createStore({
                 commit('setUser', response.data.user)
             } catch (error) {
                 // Handle error
+                console.log(error)
+            }
+        },
+        async logout({ commit }) {
+            try {
+                await apiClient.post('/api/logout')
+                commit('removeUser')
+            } catch (error) {
                 console.log(error)
             }
         }
