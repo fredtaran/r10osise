@@ -1,12 +1,15 @@
 <script setup>
 import { initDrawers, initDropdowns } from 'flowbite';
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import apiClient from '../../services/apiClient'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
+import Loader from './Loader.vue';
 
 const store = useStore()
 const router = useRouter()
+
+const isLoading = ref(false)
 
 onMounted(() => {
     initDrawers();
@@ -14,8 +17,10 @@ onMounted(() => {
 })
 
 const logout = async () => {
+    isLoading.value = true
     await apiClient.get('/sanctum/csrf-cookie')
     await store.dispatch('logout')
+    isLoading.value = false
     router.replace('/')
 }
 </script>
@@ -132,5 +137,9 @@ const logout = async () => {
         <div class="p-4 rounded-lg mt-20">
             <slot />
         </div>
+    </div>
+
+    <div v-show="isLoading">
+        <Loader :visible="isLoading" />
     </div>
 </template>

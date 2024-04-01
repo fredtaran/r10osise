@@ -12,7 +12,7 @@ export default createStore({
         },
         removeUser(state) {
             state.user = null
-            localStorage.removeItem('vuex')
+            sessionStorage.clear()
         }
     },
     getters: {
@@ -37,5 +37,7 @@ export default createStore({
             }
         }
     },
-    plugins: [createPersistedState()],
+    plugins: [createPersistedState({
+        storage: window.sessionStorage,
+    })],
 })
