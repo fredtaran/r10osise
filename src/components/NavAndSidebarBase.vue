@@ -5,11 +5,13 @@ import apiClient from '../../services/apiClient'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import Loader from './Loader.vue';
+import ChangePassword from './ChangePassword.vue'
 
 const store = useStore()
 const router = useRouter()
 
 const isLoading = ref(false)
+const isModalOpen = ref(false);
 
 onMounted(() => {
     initDrawers();
@@ -23,9 +25,19 @@ const logout = async () => {
     isLoading.value = false
     router.replace('/')
 }
+
+const openModal = () => {
+    isModalOpen.value = true;
+};
+
+const closeModal = () => {
+    isModalOpen.value = false;
+};
 </script>
 
 <template>
+    <ChangePassword :isOpen="isModalOpen" @close="closeModal" />
+    
     <nav class="fixed top-0 z-50 w-full bg-banner-bg border-b border-gray-200">
         <div class="px-3 py-3 lg:px-5 lg:pl-3">
             <div class="flex items-center justify-between">
@@ -68,7 +80,7 @@ const logout = async () => {
                             </div>
                             <ul class="py-1" role="none">
                                 <li>
-                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300"
+                                    <a @click="openModal" href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300"
                                         role="menuItem">Change Password</a>
                                 </li>
 
