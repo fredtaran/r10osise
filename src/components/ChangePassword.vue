@@ -1,5 +1,10 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, reactive } from 'vue';
+import { required, helpers, sameAs } from '@vuelidate/validators'
+import useVuelidate from '@vuelidate/core'
+import Loader from './Loader.vue';
+import apiClient from '../../services/apiClient';
+import store from '@/store/store';
 
 const props = defineProps({
     isOpen: Boolean,
@@ -7,16 +12,44 @@ const props = defineProps({
 
 const emit = defineEmits(['close']);
 
-const password = ref('');
-const confirmPassword = ref('');
-const isPasswordVisible = ref(false);
-const isConfirmPasswordVisible = ref(false);
+const formData = reactive({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: ""
+})
 
-const passwordInputType = computed(() => (isPasswordVisible.value ? 'text' : 'password'));
+const isCurrentPasswordVisible = ref(false);
+const isNewPasswordVisible = ref(false);
+const isConfirmPasswordVisible = ref(false);
+const isLoading = ref(false)
+
+const rules = computed(() => {
+    return {
+        currentPassword: {
+            required: helpers.withMessage("Your current password is required.", required)
+        },
+        newPassword: {
+            required: helpers.withMessage("New password is required.", required)
+        },
+        confirmPassword: {
+            required: helpers.withMessage("Please confirm your password.", required),
+            sameAsPassword: sameAs(formData.newPassword)
+        }
+    }
+})
+
+const v$ = useVuelidate(rules, formData)
+
+const currentPasswordInputType = computed(() => (isCurrentPasswordVisible.value ? 'text' : 'password'));
+const newPasswordInputType = computed(() => (isNewPasswordVisible.value ? 'text' : 'password'));
 const confirmPasswordInputType = computed(() => (isConfirmPasswordVisible.value ? 'text' : 'password'));
 
-const togglePasswordVisibility = () => {
-    isPasswordVisible.value = !isPasswordVisible.value;
+const toggleCurrentPasswordVisibility = () => {
+    isCurrentPasswordVisible.value = !isCurrentPasswordVisible.value;
+};
+
+const toggleNewPasswordVisibility = () => {
+    isNewPasswordVisible.value = !isNewPasswordVisible.value;
 };
 
 const toggleConfirmPasswordVisibility = () => {
@@ -27,14 +60,25 @@ const closeModal = () => {
     emit('close');
 };
 
-const submitForm = () => {
-    if (password.value !== confirmPassword.value) {
-        alert('Passwords do not match');
-        return;
+const submitForm = async () => {
+    const validationResult = await v$.value.$validate()
+    isLoading.value = true
+    if(validationResult) {
+        try{
+            await apiClient.get('/sanctum/csrf-cookie')
+            const response = await apiClient.post(`/api/change-password/${store.state.user.id}`, formData)
+
+            isLoading.value = false
+            console.log(response)
+        } catch (err) {
+            isLoading.value = false
+            console.log(err)
+        }
+        isLoading.value = false
+    } else {
+        console.log(validationResult)
     }
-    // Here you can handle the password change logic
-    console.log('Password changed:', password.value);
-    closeModal();
+    isLoading.value = false
 };
 </script>
 
@@ -47,35 +91,68 @@ const submitForm = () => {
                 <h2 class="text-2xl">Change Password</h2>
             </div>
             <form @submit.prevent="submitForm" class="w-[50rem] max-w-sm mx-auto">
-                <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Password</label>
-                <div class="relative mb-5">
-                    <input :type="passwordInputType" v-model="password" id="password"
-                        class="block mb-2 text-sm font-medium text-gray-900 p-2 w-full rounded-md"
+                <!-- Current password -->
+                <label for="currentPassword" class="block mb-1 text-sm font-medium text-gray-900">Current Password</label>
+                <div class="relative">
+                    <input :type="currentPasswordInputType" v-model="formData.currentPassword" id="currentPassword"
+                        class="block text-sm font-medium text-gray-900 p-2 w-full rounded-md"
                         style="border: 1px solid lightslategray;" />
-                    <button @click.prevent="togglePasswordVisibility"
+                    <button @click.prevent="toggleCurrentPasswordVisibility"
                         class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5">
                         <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
                             xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"
-                            v-if="isPasswordVisible">
+                            v-if="isCurrentPasswordVisible">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M3.933 13.909A4.357 4.357 0 0 1 3 12c0-1 4-6 9-6m7.6 3.8A5.068 5.068 0 0 1 21 12c0 1-3 6-9 6-.314 0-.62-.014-.918-.04M5 19 19 5m-4 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                         </svg>
 
                         <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
                             xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"
-                            v-else="isPasswordVisible">
+                            v-else="isCurrentPasswordVisible">
                             <path stroke="currentColor" stroke-width="2"
                                 d="M21 12c0 1.2-4.03 6-9 6s-9-4.8-9-6c0-1.2 4.03-6 9-6s9 4.8 9 6Z" />
                             <path stroke="currentColor" stroke-width="2" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                         </svg>
                     </button>
                 </div>
+                <span class="text-sm text-red-700 font-italic font-bold mb-5" v-for="error in v$.currentPassword.$errors"
+                    :key="error.uid">{{ error.$message }}</span>
+                <!-- End current password -->
 
-                <label for="confirmPassword" class="block mb-2 text-sm font-medium text-gray-900">Confirm
+                <!-- New password -->
+                <label for="newPassword" class="block mb-1 mt-5 text-sm font-medium text-gray-900">Password</label>
+                <div class="relative">
+                    <input :type="newPasswordInputType" v-model="formData.newPassword" id="newPassword"
+                        class="block text-sm font-medium text-gray-900 p-2 w-full rounded-md"
+                        style="border: 1px solid lightslategray;" />
+                    <button @click.prevent="toggleNewPasswordVisibility"
+                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5">
+                        <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"
+                            v-if="isNewPasswordVisible">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3.933 13.909A4.357 4.357 0 0 1 3 12c0-1 4-6 9-6m7.6 3.8A5.068 5.068 0 0 1 21 12c0 1-3 6-9 6-.314 0-.62-.014-.918-.04M5 19 19 5m-4 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                        </svg>
+
+                        <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"
+                            v-else="isNewPasswordVisible">
+                            <path stroke="currentColor" stroke-width="2"
+                                d="M21 12c0 1.2-4.03 6-9 6s-9-4.8-9-6c0-1.2 4.03-6 9-6s9 4.8 9 6Z" />
+                            <path stroke="currentColor" stroke-width="2" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                        </svg>
+                    </button>
+                </div>
+                <span class="text-sm text-red-700 font-italic font-bold mb-5" v-for="error in v$.newPassword.$errors"
+                    :key="error.uid">{{ error.$message }}</span>
+                <!-- End new password -->
+
+                <!-- Confirm password -->
+                <label for="confirmPassword" class="block mb-1 mt-5 text-sm font-medium text-gray-900">Confirm
                     Password</label>
-                <div class="relative mb-5">
-                    <input :type="confirmPasswordInputType" v-model="confirmPassword" id="confirmPassword"
-                        class="block mb-2 text-sm font-medium text-gray-900 p-2 w-full rounded-md"
+                <div class="relative">
+                    <input :type="confirmPasswordInputType" v-model="formData.confirmPassword" id="confirmPassword"
+                        class="block text-sm font-medium text-gray-900 p-2 w-full rounded-md"
                         style="border: 1px solid lightslategray;" />
                     <button @click.prevent="toggleConfirmPasswordVisibility"
                         class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5">
@@ -88,21 +165,29 @@ const submitForm = () => {
 
                         <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
                             xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"
-                            v-else="isPasswordVisible">
+                            v-else="isConfirmPasswordVisible">
                             <path stroke="currentColor" stroke-width="2"
                                 d="M21 12c0 1.2-4.03 6-9 6s-9-4.8-9-6c0-1.2 4.03-6 9-6s9 4.8 9 6Z" />
                             <path stroke="currentColor" stroke-width="2" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                         </svg>
                     </button>
                 </div>
+                <span class="text-sm text-red-700 font-italic font-bold mb-5"
+                    v-for="error in v$.confirmPassword.$errors" :key="error.uid">{{ error.$message }}</span>
+                <!-- End confirm password -->
 
-                <div class="flex gap-3">
+                <div class="flex gap-3 mt-3">
                     <button type="submit"
                         class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Save
                         Password</button>
-                    <button class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded" @click="closeModal">Cancel</button>
+                    <button class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded"
+                        @click="closeModal">Cancel</button>
                 </div>
             </form>
         </div>
+    </div>
+
+    <div v-show="isLoading">
+        <Loader :visible="isLoading" />
     </div>
 </template>
