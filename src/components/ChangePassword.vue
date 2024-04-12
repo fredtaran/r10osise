@@ -1,16 +1,16 @@
 <script setup>
-import { ref, computed, reactive } from 'vue';
-import { required, helpers, sameAs } from '@vuelidate/validators'
+import { ref, computed, reactive } from 'vue'
+import { required, helpers, sameAs, minLength } from '@vuelidate/validators'
 import useVuelidate from '@vuelidate/core'
-import Loader from './Loader.vue';
-import apiClient from '../../services/apiClient';
-import store from '@/store/store';
+import Loader from './Loader.vue'
+import apiClient from '../../services/apiClient'
+import store from '@/store/store'
 
 const props = defineProps({
     isOpen: Boolean,
 });
 
-const emit = defineEmits(['close']);
+const emit = defineEmits(['close'])
 
 const formData = reactive({
     currentPassword: "",
@@ -18,68 +18,81 @@ const formData = reactive({
     confirmPassword: ""
 })
 
-const isCurrentPasswordVisible = ref(false);
-const isNewPasswordVisible = ref(false);
-const isConfirmPasswordVisible = ref(false);
+const isCurrentPasswordVisible = ref(false)
+const isNewPasswordVisible = ref(false)
+const isConfirmPasswordVisible = ref(false)
 const isLoading = ref(false)
+const backendCurrentPasswordErrorMsg = ref("")
+const backendSuccessMsg = ref("")
 
 const rules = computed(() => {
     return {
         currentPassword: {
-            required: helpers.withMessage("Your current password is required.", required)
+            required: helpers.withMessage("Your current password is required", required)
         },
         newPassword: {
-            required: helpers.withMessage("New password is required.", required)
+            required: helpers.withMessage("New password is required", required),
+            minLength: helpers.withMessage("The password must be at least six characters long", minLength(6))
         },
         confirmPassword: {
-            required: helpers.withMessage("Please confirm your password.", required),
-            sameAsPassword: sameAs(formData.newPassword)
+            required: helpers.withMessage("Please confirm your password", required),
+            sameAsPassword: helpers.withMessage("Password doesn't match", sameAs(formData.newPassword))
         }
     }
 })
 
 const v$ = useVuelidate(rules, formData)
 
-const currentPasswordInputType = computed(() => (isCurrentPasswordVisible.value ? 'text' : 'password'));
-const newPasswordInputType = computed(() => (isNewPasswordVisible.value ? 'text' : 'password'));
-const confirmPasswordInputType = computed(() => (isConfirmPasswordVisible.value ? 'text' : 'password'));
+const currentPasswordInputType = computed(() => (isCurrentPasswordVisible.value ? 'text' : 'password'))
+const newPasswordInputType = computed(() => (isNewPasswordVisible.value ? 'text' : 'password'))
+const confirmPasswordInputType = computed(() => (isConfirmPasswordVisible.value ? 'text' : 'password'))
 
 const toggleCurrentPasswordVisibility = () => {
-    isCurrentPasswordVisible.value = !isCurrentPasswordVisible.value;
-};
+    isCurrentPasswordVisible.value = !isCurrentPasswordVisible.value
+}
 
 const toggleNewPasswordVisibility = () => {
-    isNewPasswordVisible.value = !isNewPasswordVisible.value;
-};
+    isNewPasswordVisible.value = !isNewPasswordVisible.value
+}
 
 const toggleConfirmPasswordVisibility = () => {
-    isConfirmPasswordVisible.value = !isConfirmPasswordVisible.value;
-};
+    isConfirmPasswordVisible.value = !isConfirmPasswordVisible.value
+}
 
 const closeModal = () => {
-    emit('close');
-};
+    emit('close')
+    formData.currentPassword = ""
+    formData.newPassword = ""
+    formData.confirmPassword = ""
+    v$.value.$reset()
+}
 
 const submitForm = async () => {
     const validationResult = await v$.value.$validate()
     isLoading.value = true
-    if(validationResult) {
-        try{
+    if (validationResult) {
+        try {
             await apiClient.get('/sanctum/csrf-cookie')
             const response = await apiClient.post(`/api/change-password/${store.state.user.id}`, formData)
 
             isLoading.value = false
-            console.log(response)
+            backendCurrentPasswordErrorMsg.value = ""
+            backendSuccessMsg.value = response.data.msg
+            formData.currentPassword = ""
+            formData.newPassword = ""
+            formData.confirmPassword = ""
+            v$.value.$reset()
         } catch (err) {
             isLoading.value = false
-            console.log(err)
+            v$.value.$reset()
+            backendCurrentPasswordErrorMsg.value = err.response.data.errors.currentPassword
         }
         isLoading.value = false
     } else {
-        console.log(validationResult)
+        backendCurrentPasswordErrorMsg.value = ""
     }
     isLoading.value = false
-};
+}
 </script>
 
 <!-- ChangePasswordModal.vue -->
@@ -90,9 +103,13 @@ const submitForm = async () => {
             <div class="mb-4">
                 <h2 class="text-2xl">Change Password</h2>
             </div>
+            <div class="p-4 my-4 text-sm text-slate-900 rounded-lg bg-green-200" role="alert" v-if="backendSuccessMsg">
+                <span class="font-medium">{{ backendSuccessMsg }}</span>
+            </div>
             <form @submit.prevent="submitForm" class="w-[50rem] max-w-sm mx-auto">
                 <!-- Current password -->
-                <label for="currentPassword" class="block mb-1 text-sm font-medium text-gray-900">Current Password</label>
+                <label for="currentPassword" class="block mb-1 text-sm font-medium text-gray-900">Current
+                    Password</label>
                 <div class="relative">
                     <input :type="currentPasswordInputType" v-model="formData.currentPassword" id="currentPassword"
                         class="block text-sm font-medium text-gray-900 p-2 w-full rounded-md"
@@ -115,12 +132,14 @@ const submitForm = async () => {
                         </svg>
                     </button>
                 </div>
-                <span class="text-sm text-red-700 font-italic font-bold mb-5" v-for="error in v$.currentPassword.$errors"
-                    :key="error.uid">{{ error.$message }}</span>
+                <span class="text-sm text-red-700 font-italic font-bold mb-5"
+                    v-for="error in v$.currentPassword.$errors" :key="error.uid">{{ error.$message }}</span>
+                <span class="text-sm text-red-700 font-italic font-bold mb-5"
+                    v-for="error in backendCurrentPasswordErrorMsg" :key="error.uid">{{ error }}</span>
                 <!-- End current password -->
 
                 <!-- New password -->
-                <label for="newPassword" class="block mb-1 mt-5 text-sm font-medium text-gray-900">Password</label>
+                <label for="newPassword" class="block mb-1 mt-5 text-sm font-medium text-gray-900">New Password</label>
                 <div class="relative">
                     <input :type="newPasswordInputType" v-model="formData.newPassword" id="newPassword"
                         class="block text-sm font-medium text-gray-900 p-2 w-full rounded-md"
@@ -173,7 +192,7 @@ const submitForm = async () => {
                     </button>
                 </div>
                 <span class="text-sm text-red-700 font-italic font-bold mb-5"
-                    v-for="error in v$.confirmPassword.$errors" :key="error.uid">{{ error.$message }}</span>
+                    v-for="error in v$.confirmPassword.$errors" :key="error.uid">{{ error.$message }} <br/> </span>
                 <!-- End confirm password -->
 
                 <div class="flex gap-3 mt-3">

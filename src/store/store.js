@@ -20,13 +20,8 @@ export default createStore({
     },
     actions: {
         async login({ commit }, credentials) {
-            try {
-                let response = await apiClient.post('/api/login', credentials)
-                commit('setUser', response.data.user)
-            } catch (error) {
-                // Handle error
-                console.log(error)
-            }
+            let response = await apiClient.post('/api/login', credentials)
+            commit('setUser', response.data.user)
         },
         async logout({ commit }) {
             try {

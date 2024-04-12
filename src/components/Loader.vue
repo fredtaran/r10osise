@@ -2,7 +2,7 @@
     <div class="loader-overlay">    
     </div>
     <div class="abosulte top-0 min-h-[50vh] flex justify-center items-center">
-        <img src="../../public/loading.gif" alt="loader" class="absolute z-[500]">
+        <img src="/loading.gif" alt="loader" class="absolute z-[500]">
     </div>
 </template>
 

@@ -44,6 +44,7 @@ const login = async () => {
             errorMessage.value = err.response.data.message
         } finally {
             formData.password = ''
+            v$.value.$reset()
             loading.value = false
         }
     } else {
