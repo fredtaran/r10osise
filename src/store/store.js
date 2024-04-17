@@ -33,6 +33,11 @@ export default createStore({
         }
     },
     plugins: [createPersistedState({
-        storage: window.sessionStorage,
+        storage: sessionStorage,
+        key: 'vuex',
+        reducer: (state) => ({
+            ...state,
+            lastUpdated: new Date().toISOString(),
+        })
     })],
 })

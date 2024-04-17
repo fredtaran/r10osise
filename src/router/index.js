@@ -64,6 +64,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
+  checkAndClearState()
   if (to.matched.some(record => record.meta.requiresAuth)) {
     if (!store.state.user) {
       // Redirect to login if not authenticated
@@ -100,6 +101,18 @@ router.beforeEach((to, from, next) => {
   }
 });
 
+function checkAndClearState() {
+  const storedState = sessionStorage.getItem('vuex')
+  if (storedState) {
+    const parsedState = JSON.parse(storedState)
+    const lastUpdated = new Date(parsedState.lastUpdated)
+    const now = new Date()
+    const diffHours = (now - lastUpdated) / (1000 * 60 * 60)
 
+    if (diffHours > 24) {
+      sessionStorage.removeItem('vuex')
+    }
+  }
+}
 
 export default router
