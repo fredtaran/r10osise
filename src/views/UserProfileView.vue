@@ -1,6 +1,7 @@
 <script setup>
 import NavAndSidebarBase from '@/components/NavAndSidebarBase.vue'
-import PictureAndStatusModule from '@/components/PictureAndStatusComponent.vue'
+import PictureAndStatusComponent from '@/components/PictureAndStatusComponent.vue'
+import PersonelDetailComponent from '@/components/PersonalDetailsComponent.vue'
 
 </script>
 
@@ -8,11 +9,11 @@ import PictureAndStatusModule from '@/components/PictureAndStatusComponent.vue'
     <NavAndSidebarBase>
         <div class="grid grid-cols-12 gap-2">
             <div class="col-span-3">
-                <PictureAndStatusModule />
+                <PictureAndStatusComponent />
             </div>
             
             <div class="col-span-9">
-                
+                <PersonelDetailComponent />
             </div>
         </div>
     </NavAndSidebarBase>
