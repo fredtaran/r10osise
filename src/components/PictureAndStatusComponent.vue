@@ -10,8 +10,9 @@ import { ref } from 'vue'
         </div>
 
         <div class="mt-5">
-            <div class="flex justify-center items-center mb-3">
+            <div class="flex flex-col justify-center items-center mb-3">
                 <h3 class="text-2xl font-bold">FRED P. TARAN</h3>
+                <span class="font-italic">ftaran04@gmail.com | 0995-383-5762</span>
             </div>
 
             <table class="table-auto w-full">
