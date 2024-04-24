@@ -1,8 +1,8 @@
 <template>
     <div class="loader-overlay">    
     </div>
-    <div class="abosulte top-0 min-h-[50vh] flex justify-center items-center">
-        <img src="/loading.gif" alt="loader" class="absolute z-[500]">
+    <div class="flex justify-center items-center">
+        <img src="/loading.gif" alt="loader" class="absolute top-0 z-[500]">
     </div>
 </template>
 
@@ -19,6 +19,7 @@ export default {
     position: absolute;
     min-height: 100vh;
     min-width: 100vw;
+    height: -webkit-fill-available;
     z-index: 100;
     top: 0;
     opacity: 0.5;
