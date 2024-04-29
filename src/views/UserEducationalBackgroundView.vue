@@ -1,3 +1,40 @@
+<script setup>
+import NavAndSidebarBase from '@/components/NavAndSidebarBase.vue';
+import { ref } from 'vue';
+
+// Placeholder for the data from database
+const tableData = ref([
+    {
+        name_of_school:             "University of Science and Technology of the Southern Philippines",
+        address_of_school:          "C.M. Recto Ave., Lapasan, Cagayan de Oro City",
+        date_of_attendance_from:    "06/01/2013",
+        date_of_attendance_to:      "03/31/2017",
+        units_earned_or_degree:     "BS in Information Technology"
+    },
+    {
+        name_of_school:             "Misamis Oriental General Comprehensive High School",
+        address_of_school:          "A. Velez St., Cagayan de Oro City",
+        date_of_attendance_from:    "06/01/2009",
+        date_of_attendance_to:      "03/31/2013",
+        units_earned_or_degree:     "High School Graduate"
+    },
+])
+
+// Add row function
+const addRow = () => {
+    tableData.value.unshift(
+        {
+            name_of_school:             "Mindanao University of Science and Technology",
+            address_of_school:          "C.M. Recto Ave., Lapasan, Cagayan de Oro City",
+            date_of_attendance_from:    "06/01/2013",
+            date_of_attendance_to:      "03/31/2017",
+            units_earned_or_degree:     "BS in Information Technology"
+        }
+    )
+}
+
+</script>
+
 <template>
     <NavAndSidebarBase>
         <div class="min-h-[350px] p-6 border-2 border-gray-200 shadow rounded-md">
@@ -6,7 +43,7 @@
             <div class="mt-5">
                 <div class="flex flex-row">
                     <div class="w-full flex items-center">
-                        <button type="button"
+                        <button type="button" @click="addRow()"
                             class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-[#3b5998]/50 font-medium rounded-lg text-sm px-2 py-1.5 inline-flex items-center">
                             <svg class="w-6 h-6 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                 width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -57,27 +94,12 @@
                         </thead>
 
                         <tbody>
-                            <tr class="border border-slate-900 text-center">
-                                <td class="border border-slate-900 text-center p-2">University of Science and Technology
-                                    of
-                                    the Southern Philippines</td>
-                                <td class="border border-slate-900 text-center p-2">C.M. Recto Ave., Lapasan, Cagayan de
-                                    Oro
-                                    City</td>
-                                <td class="border border-slate-900 text-center p-2">06/01/2013</td>
-                                <td class="border border-slate-900 text-center p-2">03/31/2017</td>
-                                <td class="border border-slate-900 text-center p-2">College Graduate</td>
-                            </tr>
-
-                            <tr class="border border-slate-900 text-center">
-                                <td class="border border-slate-900 text-center p-2">Misamis Oriental General
-                                    Comprehensive
-                                    High School</td>
-                                <td class="border border-slate-900 text-center p-2">A. Velez St., Cagayan de Oro City
-                                </td>
-                                <td class="border border-slate-900 text-center p-2">06/01/2009</td>
-                                <td class="border border-slate-900 text-center p-2">03/31/2013</td>
-                                <td class="border border-slate-900 text-center p-2">High School Graduate</td>
+                            <tr v-for="(row, index) in tableData" :key="index" class="border border-slate-900 text-center">
+                                <td class="border border-slate-900 text-center p-2">{{ row.name_of_school }}</td>
+                                <td class="border border-slate-900 text-center p-2">{{ row.address_of_school }}</td>
+                                <td class="border border-slate-900 text-center p-2">{{ row.date_of_attendance_from }}</td>
+                                <td class="border border-slate-900 text-center p-2">{{ row.date_of_attendance_to }}</td>
+                                <td class="border border-slate-900 text-center p-2">{{ row.units_earned_or_degree  }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -86,7 +108,3 @@
         </div>
     </NavAndSidebarBase>
 </template>
-
-<script setup>
-import NavAndSidebarBase from '@/components/NavAndSidebarBase.vue';
-</script>
