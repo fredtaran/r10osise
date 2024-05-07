@@ -1,6 +1,17 @@
 <script setup>
-import NavAndSidebarBase from '@/components/NavAndSidebarBase.vue';
+import NavAndSidebarBase from '@/components/NavAndSidebarBase.vue'
+import WorkExperienceModal from '@/components/WorkExperienceModal.vue'
 import { ref } from 'vue';
+
+const isModalOpen = ref(false)
+
+const openModal = () => {
+    isModalOpen.value = true;
+};
+
+const closeModal = () => {
+    isModalOpen.value = false;
+};
 
 // Placeholder for the data from database
 const tableData = ref([
@@ -14,54 +25,11 @@ const tableData = ref([
     }
 ])
 
-// Add row function
-const addRow = () => {
-    const htmlString = `
-        <tr class="border border-slate-900 text-center">
-            <td class="border border-slate-900 text-center p-2">
-                <input type="text" class="block w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"/>
-            </td>
-
-            <td class="border border-slate-900 text-center p-2">
-                <input type="date" class="block w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"/>
-            </td>
-
-            <td class="border border-slate-900 text-center p-2">
-                <input type="date" class="block w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"/>
-            </td>
-
-            <td class="border border-slate-900 text-center p-2">
-                <input type="text" class="block w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"/>
-            </td>
-            
-            <td class="border border-slate-900 text-center p-2">
-                <input type="text" class="block w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"/>
-            </td>
-
-            <td class="border border-slate-900 text-center p-2">
-                <input type="text" class="block w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"/>
-            </td>
-
-            <td class="border border-slate-900 text-center p-2">
-                <button
-                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-[#3b5998]/50 font-medium rounded-lg text-md px-4 py-1.5 inline-flex items-center"
-                    title="Save">
-                    Save
-                </button>
-            </td>
-        </tr>
-    `
-
-    const targetElement = document.getElementById("work_experience_table_body").getElementsByTagName('tbody')[0]
-
-    const newRow = targetElement.insertRow(0);
-
-    newRow.innerHTML = htmlString
-}
-
 </script>
 
 <template>
+    <WorkExperienceModal :isOpen="isModalOpen" @close="closeModal"></WorkExperienceModal>
+
     <NavAndSidebarBase>
         <div class="min-h-[350px] p-6 border-2 border-gray-200 shadow rounded-md">
             <h3 class="text-2xl font-bold">Work Experience</h3>
@@ -69,7 +37,7 @@ const addRow = () => {
             <div class="mt-5">
                 <div class="flex flex-row">
                     <div class="w-full flex items-center">
-                        <button type="button" @click="addRow()"
+                        <button type="button" @click="openModal"
                             class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-[#3b5998]/50 font-medium rounded-lg text-sm px-2 py-1.5 inline-flex items-center">
                             <svg class="w-6 h-6 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                 width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -134,7 +102,7 @@ const addRow = () => {
                                 <td class="border border-slate-900 text-center p-2">
                                     <button
                                         class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-[#3b5998]/50 font-medium rounded-lg text-sm px-2 py-1.5 inline-flex items-center mx-1"
-                                        title="Edit">
+                                        title="Edit" @click="saveEntry()">
                                         <svg class="w-6 h-6 text-white" aria-hidden="true"
                                             xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
                                             viewBox="0 0 24 24">

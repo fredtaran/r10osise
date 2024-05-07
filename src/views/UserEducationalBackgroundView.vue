@@ -1,41 +1,43 @@
 <script setup>
 import NavAndSidebarBase from '@/components/NavAndSidebarBase.vue';
+import EducationalBackgroundModal from '@/components/EducationalBackgroundModal.vue'
 import { ref } from 'vue';
+
+const isModalOpen = ref(false)
+
+const openModal = () => {
+    isModalOpen.value = true;
+};
+
+const closeModal = () => {
+    isModalOpen.value = false;
+};
 
 // Placeholder for the data from database
 const tableData = ref([
     {
-        name_of_school:             "University of Science and Technology of the Southern Philippines",
-        address_of_school:          "C.M. Recto Ave., Lapasan, Cagayan de Oro City",
-        date_of_attendance_from:    "06/01/2013",
-        date_of_attendance_to:      "03/31/2017",
-        units_earned_or_degree:     "BS in Information Technology"
+        name_of_school: "University of Science and Technology of the Southern Philippines",
+        address_of_school: "C.M. Recto Ave., Lapasan, Cagayan de Oro City",
+        date_of_attendance_from: "06/01/2013",
+        date_of_attendance_to: "03/31/2017",
+        units_earned_or_degree: "BS in Information Technology",
+        attachment: "Diploma.pdf"
     },
     {
-        name_of_school:             "Misamis Oriental General Comprehensive High School",
-        address_of_school:          "A. Velez St., Cagayan de Oro City",
-        date_of_attendance_from:    "06/01/2009",
-        date_of_attendance_to:      "03/31/2013",
-        units_earned_or_degree:     "High School Graduate"
+        name_of_school: "Misamis Oriental General Comprehensive High School",
+        address_of_school: "A. Velez St., Cagayan de Oro City",
+        date_of_attendance_from: "06/01/2009",
+        date_of_attendance_to: "03/31/2013",
+        units_earned_or_degree: "High School Graduate",
+        attachment: "Diploma.pdf"
     },
 ])
-
-// Add row function
-const addRow = () => {
-    tableData.value.unshift(
-        {
-            name_of_school:             "Mindanao University of Science and Technology",
-            address_of_school:          "C.M. Recto Ave., Lapasan, Cagayan de Oro City",
-            date_of_attendance_from:    "06/01/2013",
-            date_of_attendance_to:      "03/31/2017",
-            units_earned_or_degree:     "BS in Information Technology"
-        }
-    )
-}
 
 </script>
 
 <template>
+    <EducationalBackgroundModal :isOpen="isModalOpen" @close="closeModal"></EducationalBackgroundModal>
+
     <NavAndSidebarBase>
         <div class="min-h-[350px] p-6 border-2 border-gray-200 shadow rounded-md">
             <h3 class="text-2xl font-bold">Educational Background</h3>
@@ -43,7 +45,7 @@ const addRow = () => {
             <div class="mt-5">
                 <div class="flex flex-row">
                     <div class="w-full flex items-center">
-                        <button type="button" @click="addRow()"
+                        <button type="button" @click="openModal"
                             class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-[#3b5998]/50 font-medium rounded-lg text-sm px-2 py-1.5 inline-flex items-center">
                             <svg class="w-6 h-6 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                 width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -80,11 +82,13 @@ const addRow = () => {
                     <table class="table-auto overflow-scroll w-full border border-slate-900 text-center">
                         <thead>
                             <tr class="border border-slate-900 text-center">
-                                <th class="border border-slate-900 text-center p-2" rowspan="2">Name of School</th>
-                                <th class="border border-slate-900 text-center p-2" rowspan="2">Address /Location</th>
+                                <th class="border border-slate-900 text-center p-2 w-[20rem]" rowspan="2">Name of School</th>
+                                <th class="border border-slate-900 text-center p-2 w-[15rem]" rowspan="2">Address /Location</th>
                                 <th class="border border-slate-900 text-center p-2" colspan="2">Date of Attendance</th>
                                 <th class="border border-slate-900 text-center p-2" rowspan="2">Units Earned or Degree
                                     Obtained</th>
+                                <th class="border border-slate-900 text-center p-2" rowspan="2">Attachment</th>
+                                <th class="border border-slate-900 text-center p-2" rowspan="2">Action</th>
                             </tr>
 
                             <tr class="border border-slate-900 text-center">
@@ -94,12 +98,42 @@ const addRow = () => {
                         </thead>
 
                         <tbody>
-                            <tr v-for="(row, index) in tableData" :key="index" class="border border-slate-900 text-center">
+                            <tr v-for="(row, index) in tableData" :key="index"
+                                class="border border-slate-900 text-center">
                                 <td class="border border-slate-900 text-center p-2">{{ row.name_of_school }}</td>
                                 <td class="border border-slate-900 text-center p-2">{{ row.address_of_school }}</td>
-                                <td class="border border-slate-900 text-center p-2">{{ row.date_of_attendance_from }}</td>
+                                <td class="border border-slate-900 text-center p-2">{{ row.date_of_attendance_from }}
+                                </td>
                                 <td class="border border-slate-900 text-center p-2">{{ row.date_of_attendance_to }}</td>
-                                <td class="border border-slate-900 text-center p-2">{{ row.units_earned_or_degree  }}</td>
+                                <td class="border border-slate-900 text-center p-2">{{ row.units_earned_or_degree }}
+                                </td>
+                                <td class="border border-slate-900 text-center p-2">{{ row.attachment }}
+                                </td>
+                                <td class="border border-slate-900 text-center p-2">
+                                    <button
+                                        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-[#3b5998]/50 font-medium rounded-lg text-sm px-2 py-1.5 inline-flex items-center mx-1"
+                                        title="Edit" @click="saveEntry()">
+                                        <svg class="w-6 h-6 text-white" aria-hidden="true"
+                                            xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                                            viewBox="0 0 24 24">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
+                                        </svg>
+                                    </button>
+
+                                    <button
+                                        class="text-white bg-orange-700 hover:bg-orange-800 focus:ring-4 focus:outline-none focus:ring-[#3b5998]/50 font-medium rounded-lg text-sm px-2 py-1.5 inline-flex items-center mx-1"
+                                        title="Delete">
+                                        <svg class="w-6 h-6 text-white" aria-hidden="true"
+                                            xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                                            viewBox="0 0 24 24">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
+                                        </svg>
+                                    </button>
+                                </td>
                             </tr>
                         </tbody>
                     </table>

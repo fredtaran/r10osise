@@ -8,7 +8,7 @@ import store from '@/store/store'
 
 const props = defineProps({
     isOpen: Boolean,
-});
+})
 
 const emit = defineEmits(['close'])
 
